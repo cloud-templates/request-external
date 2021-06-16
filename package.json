@@ -1,6 +1,6 @@
 {
-  "name": "axios-external",
-  "version": "0.0.5",
+  "name": "@winner-fed/request-external",
+  "version": "0.0.1",
   "description": "",
   "main": "lib/index.umd.js",
   "module": "lib/index.js",
@@ -12,7 +12,10 @@
     "lib",
     "README.md"
   ],
-  "author": "buera",
+  "author": {
+    "name": "cloudbroker",
+    "email": "cloudbroker@163.com"
+  },
   "license": "ISC",
   "devDependencies": {
     "@babel/core": "^7.14.6",
