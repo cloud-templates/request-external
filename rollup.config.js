@@ -12,7 +12,7 @@ export default {
     {
       file: main,
       format: 'umd',
-      name: 'handyjs',
+      name: 'requestExternal',
       sourcemap: false,
       globals: {
         axios: 'axios'
