@@ -25,5 +25,5 @@ export default {
     commonjs(),
     babel({ babelHelpers: 'bundled' })
   ],
-  external: ['axios']
+  external: ['axios', 'vue']
 }
