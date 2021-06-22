@@ -1,17 +1,19 @@
+import Vue from 'vue'
 import axios from 'axios'
+
+const pendingRequest = new Map()
+let clearRequestFlag = false
 
 function generateReqKey (config) {
   const { method, url, params, data } = config
   return [method, url, JSON.stringify(params), JSON.stringify(data)].join('&')
 }
 
-const pendingRequest = new Map()
-
 function addPendingRequest (config) {
   const requestKey = generateReqKey(config)
   config.cancelToken = config.cancelToken || new axios.CancelToken((cancel) => {
     if (!pendingRequest.has(requestKey)) {
-      pendingRequest.set(requestKey, cancel)
+      pendingRequest.set(requestKey, config)
     }
   })
 }
@@ -25,7 +27,39 @@ function removePendingRequest (config) {
   }
 }
 
-export function cancelRepeatRequest () {
+function cancelRequestWhenComponentDestroy () {
+  clearRequestFlag = true
+  Vue.mixin({
+    beforeDestroy () {
+      if (clearRequestFlag) return
+      clearRequestFlag = true
+      const timer = setTimeout(() => {
+        clearRequestFlag = false
+        clearRequestMap()
+        clearTimeout(timer)
+      }, 0)
+    }
+  })
+}
+
+function clearRequestMap () {
+  pendingRequest.forEach((config) => {
+    const {
+      fromRoute = true
+    } = config
+    if (fromRoute) {
+      removePendingRequest(config)
+    }
+  })
+}
+
+export function cancelExtraRequest ({
+  cancelComponentRequest = false
+}) {
+  // 默认为false，如果设置了，则在页面destroy的时候清除请求
+  if (cancelComponentRequest) {
+    cancelRequestWhenComponentDestroy()
+  }
   axios.interceptors.request.use(
     (config) => {
       removePendingRequest(config) // 检查是否存在重复请求，若存在则取消已发的请求
